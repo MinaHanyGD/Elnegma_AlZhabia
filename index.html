@@ -58,6 +58,7 @@
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.65 var(--f-body);-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
@@ -151,14 +152,15 @@ a{color:inherit;text-decoration:none}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr));gap:14px;list-style:none;margin:0;padding:0}
 @media (min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}}
 .item{position:relative;display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px 12px 14px;background:var(--card);border:1px solid var(--line);border-radius:18px;transition:transform .4s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .4s}
-.item:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 22px 42px -22px var(--shadow)}
-.item.reveal{animation:rise .75s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+.item{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.item:active{transform:scale(.97)}
+@media (hover:hover){.item:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 22px 42px -22px var(--shadow)}.item:hover .halo{transform:rotate(45deg) scale(1.06)}.item:hover .pic{transform:scale(1.08) translateY(-4px)}}
+.card-btn{display:flex;flex-direction:column;gap:10px;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:inherit;cursor:pointer;border-radius:12px}
+.item.reveal{animation:rise .75s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:var(--d,0s)}
 .art{position:relative;aspect-ratio:1;max-width:100%;display:grid;place-items:center;overflow:hidden;border-radius:14px;background:radial-gradient(circle at 50% 42%,var(--art-1),var(--art-2) 74%)}
 .halo{position:absolute;inset:5%;width:90%;height:90%;opacity:.55;transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
-.item:hover .halo{transform:rotate(45deg) scale(1.06)}
 .pic{position:relative;width:88%;height:88%;overflow:visible;filter:drop-shadow(0 7px 8px rgba(30,15,5,.3));transition:transform .55s cubic-bezier(.2,.8,.2,1)}
-.item:hover .pic{transform:scale(1.08) translateY(-4px)}
-.item h3{margin:0;font:500 1.08rem/1.4 var(--f-display);text-wrap:balance}
+.nm{display:block;margin:0;font:500 1.08rem/1.4 var(--f-display);text-wrap:balance}
 .prices{display:flex;gap:6px;margin-top:auto}
 .pr{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;padding:6px 4px;border-radius:12px;background:var(--pill);border:1px solid var(--line)}
 .pr small{font-size:.72rem;line-height:1.3;color:var(--muted);white-space:nowrap}
@@ -215,6 +217,66 @@ a{color:inherit;text-decoration:none}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+.hint{display:none;margin:10px 2px 0;color:var(--muted);font-size:.9rem}
+
+/* price sheet */
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,5,2,.66);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fade2 .3s both}
+.sheet-p{position:relative;width:100%;max-width:520px;max-height:calc(100dvh - 20px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:28px 28px 0 0;padding:26px max(20px,env(safe-area-inset-left,0px)) calc(26px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-right,0px));text-align:center;animation:sheetUp .45s cubic-bezier(.2,.9,.25,1) both}
+.sheet-p::before{content:"";position:absolute;top:9px;left:50%;width:42px;height:4px;margin-left:-21px;border-radius:4px;background:var(--line)}
+.sheet.closing .sheet-p{animation:sheetDown .22s ease-in both}
+.sheet.closing .sheet-bg{animation:fade3 .22s both}
+.s-x{position:absolute;top:14px;inset-inline-end:14px;display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--pill);color:var(--gold-text);cursor:pointer}
+.s-x svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.s-art{position:relative;display:grid;place-items:center;width:min(56vw,220px);aspect-ratio:1;margin:8px auto 14px;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% 42%,var(--art-1),var(--art-2) 74%)}
+.s-art .halo{animation:spin 40s linear infinite}
+.s-art .pic{animation:float 5s ease-in-out infinite alternate}
+.s-kind{margin:0;color:var(--muted);font-size:.9rem}
+.s-name{margin:2px 0 16px;font:600 1.6rem/1.35 var(--f-display);color:var(--gold-text);text-wrap:balance}
+.s-prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.sp{display:flex;flex-direction:column;align-items:center;gap:0;padding:14px 10px 12px;border:1px solid var(--line);border-radius:18px;background:var(--pill)}
+.sp .lb{font-weight:600;font-size:1rem}
+.sp small{min-height:1.2em;color:var(--muted);font-size:.82rem}
+.sp .num{font:600 2.6rem/1.2 var(--f-body);color:var(--gold-text);font-variant-numeric:tabular-nums}
+@media (min-width:641px){
+  .sheet{align-items:center}
+  .sheet-p{border-radius:28px;border-bottom:1px solid var(--line)}
+  .sheet-p::before{display:none}
+}
+@keyframes fade2{from{opacity:0}to{opacity:1}}
+@keyframes fade3{to{opacity:0}}
+@keyframes sheetUp{from{transform:translateY(70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes sheetDown{to{transform:translateY(60px);opacity:0}}
+@keyframes float{to{transform:translateY(-5px)}}
+
+/* phone: compact grid, price on tap */
+@media (max-width:640px){
+  .hero-in{padding-block:14px 26px;gap:8px}
+  .emblem-wrap{width:min(60%,250px)}
+  .brand-ar{font-size:clamp(2.3rem,12vw,3.1rem)}
+  .brand-en{letter-spacing:.3em;font-size:1rem}
+  .tag{margin-top:12px;font-size:1.1rem}
+  .cta{margin-top:18px;gap:10px}
+  .btn{padding:12px 22px}
+  .ribbon{padding-block:8px}
+  .tools{padding-block:18px 0}
+  .hint{display:block}
+  .sec{padding-block:26px 18px}
+  .sec-head{margin-bottom:14px}
+  .sec-head h2{font-size:1.5rem}
+  .lat{font-size:.85rem}
+  .rule{margin-top:6px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .item{padding:6px 6px 9px;border-radius:14px}
+  .card-btn{gap:6px}
+  .art{border-radius:10px}
+  .nm{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;font-size:.8rem;line-height:1.4;text-align:center}
+  .prices{display:none}
+  .note{font-size:.85rem}
+  .tabs a{padding:10px 16px}
+}
+@media (max-width:359px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 
 <div class="app" dir="rtl" lang="ar" id="top">
@@ -262,13 +324,14 @@ a{color:inherit;text-decoration:none}
         <span class="sr">ابحث في المنيو</span>
         <input id="q" type="search" placeholder="ابحث في المنيو، مثلاً: لاتيه" autocomplete="off">
       </label>
+      <p class="hint">اضغط على أي صنف عشان تشوف سعره.</p>
     </div>
 
     <section class="sec" id="beans" data-sec>
       <div class="in">
         <div class="sec-head"><h2>قائمة أسعار بن النجمة الذهبية</h2><p class="lat" dir="ltr">COFFEE BEANS PRICE LIST</p><div class="rule" data-rule></div></div>
         <ul class="grid" id="g-beans"></ul>
-        <p class="note">ثمن كيلو يعني ١٢٥ جرام، والسعر بالكيلو لـ ٨ أثمان.</p>
+        <p class="note">ثمن كيلو يعني 125 جرام، والسعر بالكيلو لـ 8 أثمان.</p>
       </div>
     </section>
 
@@ -307,6 +370,17 @@ a{color:inherit;text-decoration:none}
       <p>قهوة ... لكل لحظة أجمل</p>
     </div>
   </footer>
+
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sName" hidden>
+    <div class="sheet-bg" data-close></div>
+    <div class="sheet-p">
+      <button class="s-x" type="button" id="sClose" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="s-art" id="sArt"></div>
+      <p class="s-kind" id="sKind"></p>
+      <h3 class="s-name" id="sName"></h3>
+      <div class="s-prices" id="sPrices"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -539,18 +613,23 @@ var HOT=[
 
 /* ---------- render ---------- */
 var HALO='<svg class="halo" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#d9a63f" stroke-width=".7"><polygon points="'+sq(50,50,46,0)+'"/><polygon points="'+sq(50,50,46,Math.PI/4)+'"/><polygon points="'+star8(50,50,40,22)+'" stroke-opacity=".7"/></svg>';
-function priceHtml(arr,labels){
-  if(arr.length===1&&!labels)return '<div class="pr one"><b class="num" data-v="'+arr[0]+'">'+arr[0]+'</b></div>';
-  return arr.map(function(v,i){return '<div class="pr"><small'+(labels&&labels[i].length>1?'':' dir="ltr"')+'>'+labels[i]+'</small><b class="num" data-v="'+v+'">'+v+'</b></div>'}).join('');
+function norm(s){return String(s).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')}
+function priceHtml(pr){
+  if(pr.length===1)return '<span class="pr one"><b class="num" data-v="'+pr[0].v+'">'+pr[0].v+'</b></span>';
+  return pr.map(function(p){return '<span class="pr"><small'+(p.l.length>1?'':' dir="ltr"')+'>'+p.l+'</small><b class="num" data-v="'+p.v+'">'+p.v+'</b></span>'}).join('');
 }
-function norm(s){return String(s).toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')}
+function prOf(r,mode){
+  if(mode==='beans')return [{l:'ثمن كيلو',s:'125 جرام',v:r[1]},{l:'كيلو',s:'8 أثمان',v:r[2]}];
+  if(r[1].length===2)return [{l:'M',s:'وسط',v:r[1][0]},{l:'L',s:'كبير',v:r[1][1]}];
+  return [{l:'السعر',s:'',v:r[1][0]}];
+}
 function build(id,rows,mode){
   var ul=document.getElementById(id);
   rows.forEach(function(r){
     var li=document.createElement('li');li.className='item';li.setAttribute('data-n',norm(r[0]));
-    var ph=mode==='beans'?priceHtml([r[1],r[2]],['ثمن كيلو','كيلو']):(r[1].length===2?priceHtml(r[1],['M','L']):priceHtml(r[1]));
-    var art=mode==='beans'?r[3]:r[2];
-    li.innerHTML='<div class="art">'+HALO+'<svg class="pic" viewBox="0 0 120 120" aria-hidden="true">'+art+'</svg></div><h3>'+r[0]+'</h3><div class="prices">'+ph+'</div>';
+    var pr=prOf(r,mode),art=mode==='beans'?r[3]:r[2];
+    li.setAttribute('data-p',JSON.stringify(pr));
+    li.innerHTML='<button type="button" class="card-btn" aria-haspopup="dialog"><span class="art">'+HALO+'<svg class="pic" viewBox="0 0 120 120" aria-hidden="true">'+art+'</svg></span><span class="nm">'+r[0]+'</span><span class="prices">'+priceHtml(pr)+'</span></button>';
     ul.appendChild(li);
   });
 }
@@ -625,6 +704,38 @@ function filter(){
 }
 q.addEventListener('input',filter);
 document.getElementById('clear').addEventListener('click',function(){q.value='';filter();q.focus()});
+
+/* ---------- price sheet ---------- */
+var sheet=document.getElementById('sheet'),sClose=document.getElementById('sClose'),lastBtn=null,closeT=0;
+function openSheet(li){
+  clearTimeout(closeT);sheet.classList.remove('closing');
+  lastBtn=li.querySelector('.card-btn');
+  var pr=JSON.parse(li.getAttribute('data-p')),svg=li.querySelector('.pic').innerHTML;
+  svg=svg.replace(/id="([^"]+)"/g,'id="$1-s"').replace(/url\(#([^)]+)\)/g,'url(#$1-s)');
+  document.getElementById('sArt').innerHTML=HALO+'<svg class="pic" viewBox="0 0 120 120" aria-hidden="true">'+svg+'</svg>';
+  document.getElementById('sKind').textContent=li.closest('section').querySelector('h2').textContent;
+  document.getElementById('sName').textContent=li.querySelector('.nm').textContent;
+  document.getElementById('sPrices').innerHTML=pr.map(function(p){return '<div class="sp"><span class="lb">'+p.l+'</span><small>'+(p.s||'')+'</small><b class="num" data-v="'+p.v+'">'+p.v+'</b></div>'}).join('');
+  sheet.hidden=false;document.documentElement.style.overflow='hidden';
+  sheet.querySelectorAll('.num').forEach(function(n){setTimeout(function(){countUp(n)},160)});
+  sClose.focus();
+}
+function closeSheet(){
+  if(sheet.hidden)return;
+  function done(){sheet.hidden=true;sheet.classList.remove('closing');document.documentElement.style.overflow='';if(lastBtn)lastBtn.focus()}
+  if(RM){done();return}
+  sheet.classList.add('closing');closeT=setTimeout(done,220);
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('.card-btn');
+  if(b){openSheet(b.parentNode);return}
+  if(!sheet.hidden&&(e.target.hasAttribute('data-close')||(e.target.closest&&e.target.closest('#sClose'))))closeSheet();
+});
+document.addEventListener('keydown',function(e){
+  if(sheet.hidden)return;
+  if(e.key==='Escape')closeSheet();
+  else if(e.key==='Tab'){e.preventDefault();sClose.focus()}
+});
 })();
 </script>
 
